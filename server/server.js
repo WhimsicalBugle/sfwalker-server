@@ -80,7 +80,7 @@ app.get('/incidents', function(req, res) {
     var data = [];
     _.each(incidents, function(incident){
       var obj = {
-        tite: incident.category,
+        title: incident.category,
         subtitle: incident. datetime,
         type: 'point',
         id: 'report:'+incident.id.toString(),
