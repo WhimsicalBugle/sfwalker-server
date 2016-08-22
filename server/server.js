@@ -5,7 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Incident = require('./models/model');
 var _ = require('underscore');
-
+var moment = require('moment');
 var generatePathColors = require('./pathColors');
 var getRoutes = require('./dijkstra.js');
 
@@ -26,11 +26,11 @@ io.on('connection', function(socket){
 
   socket.on('report', function (data) {
     console.log('incident recieved on backend')
-
+    var time = moment().format('MMMM Do YYYY, h:mm:ss a');
     //create new object to write to postgres
     var newIncident = {
       category: data.category,
-      datetime: new Date(),
+      datetime: time,
       latitude: data.coords[0],
       longitude: data.coords[1]
     };
@@ -75,18 +75,13 @@ app.post('/routes', function(req, res) {
 
 app.get('/incidents', function(req, res) {
   console.log('/incident get route');
-  Incident.findAll({
-    where: {
-      datetime: {
-        //filter for incidents where datetime greater than or equal to the past 24 hours
-        $gte: new Date(new Date() - 24 * 60 * 60 * 1000)
-      }
-    }
-  }).then( function (incidents) {
+  Incident.findAll().then( function (incidents) {
 
     var data = [];
     _.each(incidents, function(incident){
       var obj = {
+        tite: incident.category,
+        subtitle: incident. datetime,
         type: 'point',
         id: 'report:'+incident.id.toString(),
         coordinates: [incident.latitude, incident.longitude],
