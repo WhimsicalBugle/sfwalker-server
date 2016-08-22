@@ -1,16 +1,10 @@
 var Sequelize = require('sequelize');
 
 //the database "reporting" should already have been created in postgres
-var DATABASE_URL = ('postgres://visicmtsolqsfl:-2UNJ6XVdXlJJLeIHzlkot_RDq@ec2-54-235-102-190.compute-1.amazonaws.com:5432/dfrqqjpqfcc7lp')
+// var DATABASE_URL = ('postgres://visicmtsolqsfl:-2UNJ6XVdXlJJLeIHzlkot_RDq@ec2-54-235-102-190.compute-1.amazonaws.com:5432/dfrqqjpqfcc7lp')
 
 // var sequelize = new Sequelize('postgres://localhost:5432/reporting');
-sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    protocol: 'postgres',
-    dialectOptions: {
-        ssl: true
-    }
-});
+sequelize = new Sequelize('postgres://visicmtsolqsfl:-2UNJ6XVdXlJJLeIHzlkot_RDq@ec2-54-235-102-190.compute-1.amazonaws.com:5432/dfrqqjpqfcc7lp');
 //test connection
 sequelize
   .authenticate()
