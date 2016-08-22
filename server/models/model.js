@@ -1,13 +1,21 @@
 var Sequelize = require('sequelize');
 
 //the database "reporting" should already have been created in postgres
-sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    protocol: 'postgres',
-    dialectOptions: {
-        ssl: true
-    }
-});
+sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_BRONZE_URL, {
+      dialect:  'postgres',
+      protocol: 'postgres',
+      port:     match[4],
+      host:     match[3],
+      logging:  true //false
+    })
+// var sequelize = new Sequelize('postgres://localhost:5432/reporting');
+// sequelize = new Sequelize(process.env.DATABASE_URL, {
+//     dialect: 'postgres',
+//     protocol: 'postgres',
+//     dialectOptions: {
+//         ssl: true
+//     }
+// });
 //test connection
 sequelize
   .authenticate()
