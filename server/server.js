@@ -5,7 +5,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Incident = require('./models/model');
 var _ = require('underscore');
-var moment = require('moment');
+var Promise = require('bluebird');
+
 var generatePathColors = require('./pathColors');
 var getRoutes = require('./dijkstra.js');
 
@@ -26,12 +27,11 @@ io.on('connection', function(socket){
 
   socket.on('report', function (data) {
     console.log('incident recieved on backend')
-    var time = moment().utcOffset(8).format('MMMM Do YYYY, h:mm:ss a');
+  
     //create new object to write to postgres
     var newIncident = {
       category: data.category,
-      time: Date.now(),
-      datetime: time,
+      datetime: new Date(),
       latitude: data.coords[0],
       longitude: data.coords[1]
     };
@@ -39,10 +39,13 @@ io.on('connection', function(socket){
     //write to postgres
     Incident.create(newIncident).then(function(incident) {
       console.log('new incident saved');
-
+      
       //emit incident back to all users
-      socket.broadcast.emit('appendReport', incident);
+      socket.emit('appendReport', incident);
     });
+
+
+
   });
 });
 
@@ -54,28 +57,33 @@ app.get('/allstreets', function(req, res) {
     res.send(result);
   })
   .catch(function(e) {
-      console.log(e);
-      res.sendStatus(500);
+    console.log(e);
+    res.sendStatus(500);
   });
 });
 
 app.post('/routes', function(req, res) {
-  var short = getRoutes(req.body.start, req.body.dest, 'distance');
-  var safe = getRoutes(req.body.start, req.body.dest, 'crimeDistance');
-
-  res.type('application/json');
-  res.status(200);
-  res.send(JSON.stringify({
-    short: short,
-    safe: safe
-  }));
-})
+  Promise.all([getRoutes(req.body.start, req.body.dest, 'distance'), getRoutes(req.body.start, req.body.dest, 'crimeDistance')])
+  .then(function(values) {
+    console.log(values);
+    res.type('application/json');
+    res.status(200);
+    res.send(JSON.stringify({
+      short: values[0].path,
+      shortDist: values[0].dist,
+      shortDanger: values[0].danger,
+      safe: values[1].path,
+      safeDist: values[1].dist,
+      safeDanger: values[1].danger
+    }));
+  });
+});
 
 app.get('/incidents', function(req, res) {
   console.log('/incident get route');
   Incident.findAll({
     where: {
-      time: {
+      datetime: {
         //filter for incidents where datetime greater than or equal to the past 24 hours
         $gte: new Date(new Date() - 24 * 60 * 60 * 1000)
       }
@@ -83,10 +91,8 @@ app.get('/incidents', function(req, res) {
   }).then( function (incidents) {
 
     var data = [];
-    _.each(incidents, function(incident){
+    _.each(incidents, function(incident){ 
       var obj = {
-        title: incident.category,
-        subtitle: incident.datetime,
         type: 'point',
         id: 'report:'+incident.id.toString(),
         coordinates: [incident.latitude, incident.longitude],
