@@ -18,7 +18,6 @@ sequelize
 var Incident = sequelize.define('incident', {
   category: Sequelize.STRING,
   datetime: Sequelize.STRING,
-  time: Sequelize.DATE,
   latitude: Sequelize.DECIMAL,
   longitude: Sequelize.DECIMAL
 });
