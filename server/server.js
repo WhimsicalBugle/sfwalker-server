@@ -32,11 +32,11 @@ io.on('connection', function(socket){
     var newIncident = {
       category: data.category,
       datetime: new Date(),
-    var time = moment().format('MMMM Do YYYY, h:mm:ss a');
+    // var time = moment().format('MMMM Do YYYY, h:mm:ss a');
     //create new object to write to postgres
-    var newIncident = {
-      category: data.category,
-      datetime: time,
+    // var newIncident = {
+      // category: data.category,
+      // datetime: time,
       latitude: data.coords[0],
       longitude: data.coords[1]
     };
@@ -86,16 +86,14 @@ app.post('/routes', function(req, res) {
 
 app.get('/incidents', function(req, res) {
   console.log('/incident get route');
-  // Incident.findAll({
-  //   where: {
-  //     datetime: {
-  //       //filter for incidents where datetime greater than or equal to the past 24 hours
-  //       $gte: new Date(new Date() - 24 * 60 * 60 * 1000)
-  //     }
-  //   }
-  // }).then( function (incidents) {
-  Incident.findAll().then( function (incidents) {
-
+  Incident.findAll({
+    where: {
+      datetime: {
+        //filter for incidents where datetime greater than or equal to the past 24 hours
+        $gte: new Date(new Date() - 24 * 60 * 60 * 1000)
+      }
+    }
+  }).then( function (incidents) {
     var data = [];
     _.each(incidents, function(incident){
       var obj = {
