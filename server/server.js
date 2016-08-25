@@ -46,7 +46,7 @@ io.on('connection', function(socket){
       console.log('new incident saved');
 
       //emit incident back to all users
-      socket.emit('appendReport', incident);
+      io.emit('appendReport', incident);
     });
   });
 });
