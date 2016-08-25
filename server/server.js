@@ -95,12 +95,12 @@ app.get('/incidents', function(req, res) {
       var obj = {
         type: 'point',
         id: 'report:'+incident.id.toString(),
-        coordinates: [incident.latitude, incident.longitude],
-        annotationImage: {
-           source: { uri: 'https://cldup.com/7NLZklp8zS.png' },
-           height: 25,
-           width: 25
-         }
+        coordinates: [incident.latitude, incident.longitude]//,
+//         annotationImage: {
+//            source: { uri: 'https://cldup.com/7NLZklp8zS.png' },
+//            height: 25,
+//            width: 25
+//          }
       }
       data.push(obj);
 
