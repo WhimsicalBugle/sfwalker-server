@@ -95,7 +95,7 @@ app.get('/incidents', function(req, res) {
     _.each(incidents, function(incident){
       var obj = {
         title: incident.category,
-        subtitle: incident. datetime,
+        subtitle: incident.datetime,
         type: 'point',
         id: 'report:'+incident.id.toString(),
         coordinates: [incident.latitude, incident.longitude],
