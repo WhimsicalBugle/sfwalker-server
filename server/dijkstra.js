@@ -63,7 +63,7 @@ module.exports = function(start, dest, attr) {
 
   for (var key in hash) {
     var coords = JSON.parse(key);
-    
+
     var curStartDist = computeHaversine(start, coords);
     if (curStartDist < startDist) {
       closestStart = coords;
